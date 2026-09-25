@@ -523,6 +523,172 @@ canvas#confetti{position:fixed;inset:0;width:100%;height:100%;pointer-events:non
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}
 }
+
+/* =========================================================
+   RESPONSIVE LAYER
+   Design rule: every screen is laid out in "rem", and rem follows the
+   screen (see the html rules below). Screens fit without scrolling on
+   normal landscape and portrait displays; on very small or very short
+   screens they scroll vertically instead of clipping. Nothing ever
+   scrolls sideways.
+   ========================================================= */
+html{font-size:clamp(8px,min(.8333vw,1.4815vh),80px)}
+@media (max-aspect-ratio:1/1){html{font-size:clamp(9px,min(1.55vw,1vh),64px)}}
+@media (max-width:640px) and (max-aspect-ratio:1/1){html{font-size:clamp(8px,2.55vw,16px)}}
+@media (max-height:560px) and (min-aspect-ratio:1/1){html{font-size:clamp(5.5px,1.95vh,11px)}}
+
+/* safety net: a screen can always be scrolled, never clipped (scrollbars hidden for kiosks) */
+.screen{overflow-x:hidden;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.screen::-webkit-scrollbar{display:none}
+.screen>*{min-width:0}
+
+/* landscape: the home and result rows take the available height, they never grow past it */
+#screen-home,#screen-result{grid-template-rows:minmax(0,1fr)}
+.board{overflow:hidden}
+.lb{container-type:size}
+.lb-row{padding-top:.25rem;padding-bottom:.25rem}
+.lb-row .nm{min-width:0}
+
+/* student rows: two lines when there is room, one line when the board is short */
+@container (max-height:42rem){
+  .lb-row.stu .nm{flex-direction:row;align-items:baseline;gap:.8rem;white-space:nowrap;overflow:hidden}
+  .lb-row.stu .nm span{flex:none;max-width:62%}
+  .lb-row.stu .nm small{flex:1 1 0;min-width:0;font-size:1.3rem}
+}
+
+/* keyboard: keys share the width, so the keyboard always fits */
+.krow{flex-wrap:nowrap}
+.key{flex:1 1 0;min-width:0;max-width:6.2rem;padding:0 .2rem}
+.key.wide{flex:1.55 1 0;min-width:0;max-width:9rem}
+.key.space{flex:5 1 0;max-width:34rem}
+.kbd.dense .key{height:4.9rem;max-width:5.6rem;min-width:0}
+.kbd.dense .key.wide{max-width:8.6rem;min-width:0}
+.kbd,.kbd.dense{gap:.7rem}.kbd.dense{gap:.55rem}.kbd.dense .krow{gap:.55rem}
+.name-body{gap:1.5rem}
+.name-actions{flex-wrap:wrap;justify-content:center}
+.field{min-width:0}
+
+/* quiz header and rail can shrink */
+.qhead{grid-template-columns:minmax(0,1fr) auto minmax(0,1fr)}
+.qhead .brand,.who{min-width:0}
+.who .nm{min-width:0}
+.qmain{grid-template-columns:15rem minmax(0,1fr)}
+.qcard,.qtext,.opt .otxt,.mitem .tx,.oitem .tx{min-width:0;overflow-wrap:anywhere}
+.qcard{overflow:visible}
+
+/* result screen: a little less padding so the rank pill fits on one screen even when a player is outside the top 10 */
+#screen-result{padding-top:2rem;padding-bottom:2.2rem}
+#screen-result .res-col{gap:1.4rem}
+#screen-result .res-brand img{height:5rem}
+#screen-result .res-card{padding:2.2rem 2.6rem 2rem}
+
+/* ---------- portrait / narrow ---------- */
+@media (max-aspect-ratio:1/1){
+  #screen-home{grid-template-columns:minmax(0,1fr);grid-template-rows:auto auto;overflow-y:auto}
+  #screen-result{grid-template-columns:minmax(0,1fr);grid-template-rows:auto auto;overflow-y:auto}
+  .board{min-height:66rem}
+  .qmain{grid-template-columns:minmax(0,1fr)}
+  .rail{grid-template-columns:auto minmax(0,1fr) auto}
+  .facts{grid-template-columns:repeat(3,minmax(0,max-content))}
+  .hero{grid-template-columns:auto minmax(0,1fr)}
+  .name-body,.cat-body{max-width:100%}
+}
+@media (max-aspect-ratio:1/1){
+  .qcard>.learn{padding:1.5rem 1.8rem;gap:1.1rem}
+  .learn .lans{font-size:2.7rem;padding:1rem 1.4rem}.learn .lans.long{font-size:2.1rem}.learn .lnote{font-size:1.9rem}.learn .lhead{font-size:1.9rem}
+}
+/* tall portrait screens (kiosk / signage, 2:3 and taller): home and result fit exactly, no scrolling */
+@media (min-width:641px) and (max-aspect-ratio:1/1){
+  #screen-home{grid-template-rows:auto minmax(0,1fr);padding-bottom:7rem;overflow-y:hidden}
+  #screen-result{grid-template-rows:auto minmax(0,1fr);overflow-y:hidden;padding-bottom:3rem}
+  #screen-home .board,#screen-result .board{min-height:0}
+  #screen-home,#screen-result{gap:2.4rem}
+}
+/* portrait tablets that are not very tall: the result page scrolls (board below the score) */
+@media (min-width:641px) and (min-aspect-ratio:2/3) and (max-aspect-ratio:1/1){
+  #screen-result{grid-template-rows:auto auto;overflow-y:auto}
+  #screen-result .board{min-height:48rem}
+}
+@media (max-width:640px) and (max-aspect-ratio:1/1){
+  .hero{grid-template-columns:minmax(0,1fr)}
+  .facts{grid-template-columns:repeat(3,minmax(0,1fr));gap:.7rem;width:100%}
+  .fact{padding:.8rem 1rem;font-size:1.4rem}.fact b{font-size:3rem}.fact:last-child{max-width:none}
+  .cta-row{flex-wrap:wrap;gap:1.2rem}
+  .cta-note{max-width:none}
+  h1.title{font-size:7.4rem}
+  .btn-primary{font-size:2.4rem;padding:1.3rem 3rem}
+  .res-actions .btn-primary{font-size:2.2rem!important;padding:1.1rem 2.4rem!important}
+  .res-card{padding:1.6rem}
+  .reservoir{--d:15rem}.rtext b{font-size:8rem}.rtext small{font-size:2.6rem;margin-top:3.2rem}
+  .stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .board-head h2{font-size:2.4rem}
+  .lb-row{gap:.7rem;padding:.4rem .6rem}
+  .lb-row .nm{font-size:1.6rem}
+  .lb-row .sc{gap:.5rem}
+  .lb-row .tm{font-size:1.3rem}
+  .name-body h2{font-size:3.4rem}
+  .name-body .sub{font-size:1.5rem}
+  .field{font-size:3.2rem;min-height:6.4rem}
+  .field.sm{font-size:2.3rem}
+  .top-brand img{height:4.6rem}
+  .top-brand b{font-size:1.7rem}
+  .rank{width:2.6rem}
+}
+
+/* ---------- short landscape screens (phones on their side) ---------- */
+@media (max-height:560px) and (min-aspect-ratio:1/1){
+  .screen{padding:1.6rem 2.6rem}
+  .tools{top:.8rem;right:1rem}.tool{width:4rem;height:4rem}
+  #screen-home{padding-bottom:2rem;gap:2.4rem}
+  #screen-home .board,#screen-result .board{margin-top:3.2rem}
+  .hero{row-gap:1.4rem;column-gap:2.4rem}
+  .hero .logo{height:13rem}
+  h1.title{font-size:5.2rem}
+  .presented{font-size:1.5rem;margin-top:.6rem}
+  .fact{padding:.7rem 1.2rem .8rem;font-size:1.3rem}.fact b{font-size:2.6rem}
+  .btn-primary{font-size:2.1rem;padding:1.1rem 2.8rem}
+  .cta-note{font-size:1.3rem}
+  .board{padding:1.4rem 1.6rem 1.2rem}
+  .board-head{margin-bottom:.6rem}.board-head .trophy{width:3.6rem;height:3.6rem}.board-head h2{font-size:2.4rem}
+  .lb-row{padding:.25rem .8rem}.lb-row .nm{font-size:1.6rem}.lb-row .rank{width:2.6rem;height:2.6rem;font-size:1.3rem}
+  .name-body{gap:.9rem}.name-body h2{font-size:3rem}.name-body .sub{font-size:1.4rem;margin-top:-.4rem}
+  .field{min-height:5.6rem;font-size:3rem}.field.sm{font-size:2.6rem}
+  .key,.kbd.dense .key{height:4.1rem;font-size:1.9rem;border-radius:.9rem}
+  .kbd,.kbd.dense{gap:.45rem}.krow,.kbd.dense .krow{gap:.45rem}
+  .top-brand img{height:4.2rem}.top-brand b{font-size:1.6rem}
+  .btn-ghost,.btn-navy{font-size:1.5rem;padding:.8rem 1.8rem}
+  .name-actions .btn-primary{font-size:2rem;padding:1rem 2.4rem}
+  .cat-body{gap:1rem}.cat-body h2{font-size:3.4rem}.cat-body .sub{font-size:1.5rem}
+  .cats{gap:2rem;margin-top:0}.cat{padding:1.6rem 1.6rem 1.4rem;gap:.7rem;border-radius:2rem}
+  .cat .ico{width:6.4rem;height:6.4rem}.cat .ico svg{width:3.6rem;height:3.6rem}
+  .cat b{font-size:2.8rem}.cat .cd{font-size:1.4rem}
+  /* quiz */
+  #screen-quiz{gap:1rem;padding-top:1rem}
+  .qhead .brand img{height:4rem}.qhead .brand b{font-size:1.5rem}
+  .qprog .qnum{font-size:1.6rem}.seg{height:.8rem;width:3rem}
+  .who{font-size:1.4rem}.who .av{width:3rem;height:3rem;font-size:1.5rem}
+  .qmain{grid-template-columns:11rem minmax(0,1fr);gap:1.2rem}
+  .rail{padding:.9rem .6rem;gap:.7rem}
+  .ring{width:8rem;height:8rem}.ring .num b{font-size:3rem}
+  .gauge{width:3.4rem;min-height:8rem}.scale{font-size:1rem}
+  .scoreval b{font-size:3rem}
+  .qcard{padding:1.2rem 1.6rem 1rem;gap:.7rem}
+  .opt{min-height:4rem;padding:.5rem 1rem}.opt .key2{width:2.8rem;height:2.8rem;font-size:1.4rem}
+  .answers{gap:.6rem}
+  .opt.tfopt{min-height:6rem;font-size:2.6rem}
+  .answers.tf{grid-auto-rows:minmax(6rem,14rem)}
+  .mitem{min-height:4.2rem;padding:.5rem 1rem}.match .col{grid-auto-rows:minmax(4.2rem,1fr);gap:.6rem}
+  .oitem{min-height:5rem;font-size:2rem}.order{grid-auto-rows:minmax(5rem,1fr)}
+  .qfoot{min-height:4rem}.fb{font-size:1.6rem}.btn-next,.btn-lock{font-size:1.6rem;padding:.8rem 2rem}
+  .qcard>.learn{padding:1rem 1.4rem;gap:.8rem}.learn .lhead{font-size:1.6rem}.learn .lans{font-size:2.4rem;padding:.8rem 1.2rem}.learn .lans.long{font-size:1.9rem}.learn .lnote{font-size:1.7rem}
+  /* result */
+  .res-card{padding:1.4rem 1.8rem;gap:1rem 2rem}
+  .reservoir{--d:14rem}.rtext b{font-size:7rem}.rtext small{font-size:2.4rem;margin-top:3rem}
+  .res-info h2{font-size:2.6rem}.res-info p{font-size:1.5rem}
+  .stat b{font-size:2.2rem}.stat{padding:.6rem 1rem}
+  .rankpill{padding:.7rem 1.2rem;font-size:1.5rem}.rankpill b{font-size:1.9rem}
+  .res-brand img{height:4.2rem}.res-brand b{font-size:1.6rem}
+}
 </style>
 </head>
 <body>
